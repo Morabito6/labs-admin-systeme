@@ -1,6 +1,6 @@
 #!/bin/bash
 # Répertoire local du dépôt (ajuste le chemin)
-REPO_DIR="$HOME/labs-admin-systeme"
+REPO_DIR="C:\Users\Mohamed\Documents\labs-admin-systeme"
 BACKUP_DIR="$REPO_DIR/semaine1_linux_reseau/backups/$(hostname)_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
