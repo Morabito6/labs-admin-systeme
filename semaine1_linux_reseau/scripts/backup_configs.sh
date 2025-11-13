@@ -1,26 +1,49 @@
 #!/bin/bash
-# Répertoire local du dépôt (ajuste le chemin)
-REPO_DIR="C:\Users\Mohamed\Documents\labs-admin-systeme"
-BACKUP_DIR="$REPO_DIR/semaine1_linux_reseau/backups/$(hostname)_$(date +%Y%m%d_%H%M%S)"
+
+# -----------------------------
+# Variables
+# -----------------------------
+LAB_DIR="$HOME/labs-admin-systeme/semaine1_linux_reseau"
+BACKUP_DIR="$LAB_DIR/backups"
+SCRIPTS_DIR="$LAB_DIR/semaine1_linux_reseau/scripts"
+LOG_FILE="$BACKUP_DIR/cron.log"
+
+# Crée le dossier backup si inexistant
 mkdir -p "$BACKUP_DIR"
 
-# Exemples de fichiers à sauvegarder (adapter)
-FILES_TO_SAVE=(
-  "/etc/ssh/sshd_config"
-  "/etc/netplan"
-  "/etc/hosts"
-  "/etc/ufw"
-)
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Début du backup" >> "$LOG_FILE"
 
-for f in "${FILES_TO_SAVE[@]}"; do
-  if [ -e "$f" ]; then
-    cp -rL "$f" "$BACKUP_DIR/"
-  fi
-done
+# -----------------------------
+# Copier fichiers système (UFW)
+# -----------------------------
+sudo cp /etc/ufw/after.* "$BACKUP_DIR" 2>> "$LOG_FILE"
+sudo cp /etc/ufw/before.* "$BACKUP_DIR" 2>> "$LOG_FILE"
+sudo cp /etc/ufw/user* "$BACKUP_DIR" 2>> "$LOG_FILE"
 
-# Ajout au dépôt local
-cd "$REPO_DIR" || exit 1
-git pull --rebase origin main || true
-git add -A .
-git commit -m "Backup configs $(hostname) $(date +'%Y-%m-%d %H:%M:%S')" || true
-git push origin main || echo "Push failed - vérifier connexion"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Fichiers système copiés" >> "$LOG_FILE"
+
+# -----------------------------
+# Gestion Git
+# -----------------------------
+cd "$LAB_DIR" || exit
+
+# Ajouter tous les fichiers modifiés
+git add .
+
+# Commit automatique si changements
+if ! git diff --cached --quiet; then
+    git commit -m "Backup automatique $(date '+%Y-%m-%d %H:%M:%S')" >> "$LOG_FILE" 2>&1
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Commit effectué" >> "$LOG_FILE"
+else
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Aucun changement à committer" >> "$LOG_FILE"
+fi
+
+# Pull avant push pour éviter conflits
+git pull --rebase >> "$LOG_FILE" 2>&1
+
+# Push sur GitHub (Git Credential Store doit avoir ton token)
+git push >> "$LOG_FILE" 2>&1
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Push terminé" >> "$LOG_FILE"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Backup terminé" >> "$LOG_FILE"
+
