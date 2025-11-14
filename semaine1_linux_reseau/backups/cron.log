@@ -1,0 +1,10 @@
+[2025-11-14 23:35:31] Début du backup
+[2025-11-14 23:35:31] Fichiers système copiés
+[2025-11-14 23:35:31] Aucun changement à committer
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
+Everything up-to-date
+[2025-11-14 23:35:32] Push terminé
+[2025-11-14 23:35:32] Backup terminé
+[2025-11-14 23:40:48] Début du backup
+[2025-11-14 23:40:48] Fichiers UFW copiés et permissions corrigées
