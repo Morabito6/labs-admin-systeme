@@ -1,0 +1,21 @@
+services:
+  apache1:
+    build: ../apache
+    container_name: apache1
+    ports:
+      - "8081:80"
+
+  nginx1:
+    build: ../nginx
+    container_name: nginx1
+    ports:
+      - "8082:80"
+
+  reverse-proxy:
+    build: .
+    container_name: reverse-proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - apache1
+      - nginx1
