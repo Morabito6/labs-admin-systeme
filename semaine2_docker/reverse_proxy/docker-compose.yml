@@ -4,12 +4,16 @@ services:
     container_name: apache1
     ports:
       - "8081:80"
+    networks:
+      - labnet
 
   nginx1:
     build: ../nginx
     container_name: nginx1
     ports:
       - "8082:80"
+    networks:
+      - labnet
 
   reverse-proxy:
     build: .
@@ -19,3 +23,9 @@ services:
     depends_on:
       - apache1
       - nginx1
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    driver: bridge
